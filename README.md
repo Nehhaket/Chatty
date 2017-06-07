@@ -1,5 +1,3 @@
-# Chatty
-
 Chatty is a chat web application made using HTML, CSS, JavaScript, jQuery, Socket.io, Express.js and Node.js
 
 It still lacks some functionalities that I planned for it to have.
