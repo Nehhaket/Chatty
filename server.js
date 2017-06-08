@@ -24,15 +24,20 @@ io.on('connection', (socket) => {
   socket.on('user creation', (username) => {
     let message
     const tmp = activeClientsTable[socket.id]
-    if( tmp == undefined)
-      if(username == "")
+    if (tmp == undefined) {
+      if (username == "") {
         return
-      else
+      }
+      else {
         message = username + " connected"
-    else if(tmp == username)
+      }
+    }
+    else if (tmp == username) {
       return
-    else
+    }
+    else {
       message = tmp + " changed username to " + username
+    }
     activeClientsTable[socket.id] = username
     console.log(message + "\t\t(" + socket.id + ")")
     socket.broadcast.emit('server message', message)
@@ -41,32 +46,38 @@ io.on('connection', (socket) => {
   //messages handler
   socket.on('client message', (msg) => {
     const user = activeClientsTable[socket.id]
-    if(user != undefined) {
+    if (user != undefined) {
       const message = user + ": " + msg
       console.log(message + "\t\t(" + socket.id + ")")
       socket.broadcast.emit('server message', message)
     }
-    else
+    else {
       socket.emit('server message', "You need a username to use the chat!")
+    }
   })
 
   //'user is typing'
-  socket.on('is typing', (bool) => {
-    const who = activeClientsTable[socket.id]
-    if(bool)
-      areTyping[socket.id] = who
-    else
+  socket.on('typing', (bool) => {
+    if (bool) {
+      areTyping[socket.id] = activeClientsTable[socket.id]
+    }
+    else if (areTyping[socket.id] != undefined){
       delete areTyping[socket.id]
-    socket.broadcast.emit('is typing', areTyping)
+    }
+    socket.broadcast.emit('typing', areTyping)
   })
 
   //client disconnection handler
   socket.on('disconnect', () => {
     const user = activeClientsTable[socket.id]
-    if(user != undefined) {
-      io.emit('server message',  + " disconnected")
+    if (user != undefined) {
+      io.emit('server message', user + " disconnected")
       console.log(user + ' disconnected')
       delete activeClientsTable[socket.id]
+      if (areTyping[socket.id] != undefined) {
+        delete areTyping[socket.id]
+        socket.broadcast.emit('typing', areTyping)
+      }
     }
   })
 })
