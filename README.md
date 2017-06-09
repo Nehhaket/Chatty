@@ -6,6 +6,10 @@ It still lacks some functionalities that I planned for it to have.
 
 &nbsp;
 
+Upcoming changes:  
+- active users table
+- restyled layout
+
 &nbsp;
 
 &nbsp;
