@@ -8,7 +8,6 @@ It still lacks some functionalities that I planned for it to have.
 
 Upcoming changes:  
 - active users table
-- restyled layout
 
 &nbsp;
 
