@@ -16,6 +16,9 @@ app.get('/user.js', (req, res) => {
 app.get('/socket.io.js', (req, res) => {
   res.sendFile(__dirname + '/socket.io.js');
 });
+app.get('/style.css', (req, res) => {
+  res.sendFile(__dirname + '/style.css');
+});
 
 
 //chat event handlers
@@ -24,19 +27,18 @@ io.on('connection', (socket) => {
   socket.on('user creation', (username) => {
     let message;
     const tmp = activeClientsTable[socket.id];
-    if (tmp == undefined) {
-      if (username == "") {
-        return;
-      }
-      else {
-        message = username + " connected";
-      }
-    }
-    else if (tmp == username) {
+    if (username == "") {
+      socket.emit('login-status', false);
       return;
     }
+    else if (tmp == undefined) {
+        message = username + " connected";
+        socket.emit('login-status', true);
+    }
+    else if (tmp == username) return;
     else {
       message = tmp + " changed username to " + username;
+      socket.emit('login-status', true);
     }
     activeClientsTable[socket.id] = username;
     console.log(message + "\t\t(" + socket.id + ")");

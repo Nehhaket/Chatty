@@ -1,6 +1,10 @@
 $(function() {
-  let username = "";
+  let username;
   const socket = io();
+  const messagebox = document.getElementById('message-box');
+  const scrolldown = () => {
+    messagebox.scrollTop = messagebox.scrollHeight;
+  };
   const areTyping = {
     data : "",
     index : 0,
@@ -23,31 +27,44 @@ $(function() {
         this.data = tmp.slice(0,-2) + this.data;
       }
     }
-  }
+  };
   $('#messages').append($('<li>').text(areTyping.data));
 
   //username submiter
   $('#usr').submit( () => {
-    username = $('#username').val();
-    socket.emit('user creation', username);
-    $('#messages')[0].childNodes[areTyping.index].remove();
-    $('#messages').append($('<li>').text("Connected!"));
-    $('#messages').append($('<li>').text(areTyping.data));
-    areTyping.index += 1;
+    if (username != $('#username').val()) {
+      socket.emit('user creation', $('#username').val());
+    }
     return false;
-  })
+  });
+
+  socket.on('login-status', (bool) => {
+    if (bool) {
+      username = $('#username').val();
+      $('#username').css('background', 'rgb(210,230,210)');
+      $('#username').blur();
+    }
+    else {
+      $('#username').css('background', 'rgb(230,210,210)');
+    }
+  });
 
   //message sender
   $('#msg').submit( () => {
     const msg = $('#m').val();
-    if (msg == "") return false;
-    $('#m').val('');
-    socket.emit('typing', false);
-    socket.emit('client message', msg);
-    $('#messages')[0].childNodes[areTyping.index].remove();
-    $('#messages').append($('<li>').text("Me: " + msg));
-    $('#messages').append($('<li>').text(areTyping.data));
-    areTyping.index += 1;
+    if (msg != "") {
+      $('#m').val('');
+      socket.emit('typing', false);
+      socket.emit('client message', msg);
+      if (username == undefined) {
+        return false;
+      }
+      $('#messages')[0].childNodes[areTyping.index].remove();
+      $('#messages').append($('<li style="text-align: right;">').text(msg));
+      $('#messages').append($('<li>').text(areTyping.data));
+      areTyping.index += 1;
+      scrolldown();
+    }
     return false;
   });
 
@@ -58,6 +75,7 @@ $(function() {
     $('#messages').append($('<li>').text(msg));
     $('#messages').append($('<li>').text(areTyping.data));
     areTyping.index += 1;
+    scrolldown();
   });
 
 
@@ -69,7 +87,8 @@ $(function() {
     else {
       socket.emit('typing', false);
     }
-  })
+    return false;
+  });
 
 
   //'{user} is typing'
