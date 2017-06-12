@@ -1,6 +1,6 @@
 {
     "name": "chatty",
-    "version": "0.2.2",
+    "version": "0.2.5",
     "description": "chat app",
     "dependencies": {
         "express": "^4.15.2",

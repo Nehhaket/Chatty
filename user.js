@@ -1,33 +1,43 @@
 $(function() {
     let username;
+    let activesUsers;
     const socket = io();
     const messagebox = document.getElementById('message-box');
     const scrolldown = () => {
         messagebox.scrollTop = messagebox.scrollHeight;
     };
+    const updateActives = (activesTable) => {
+        while($('#clients-table')[0].childNodes[0]!=undefined) {
+            $('#clients-table')[0].childNodes[0].remove();
+        }
+        for (let user of activesTable) {
+            $('#clients-table').append($('<li>').text(user));
+        }
+    };
     const areTyping = {
-    data : "",
-    index : 0,
-    updateData: function(who) {
-        const keysTable = Object.keys(who)
-                          .filter( (e) => who[e]!=username );
-        if (keysTable.length == 0) {
-            this.data = "";
-        }
-        else if (keysTable.length == 1) {
-            this.data = who[keysTable[0]] + " is typing...";
-        }
-        else {
-            this.data = " are typing...";
-            let tmp = "";
-            for(let i=0; i < keysTable.length; i++) {
-                tmp = who[keysTable[i]] + ", " + tmp;
+        data : "",
+        index : 0,
+        updateData: function(who) {
+            const keysTable = Object.keys(who)
+                              .filter( (e) => who[e]!=username );
+            if (keysTable.length == 0) {
+                this.data = "";
             }
-            this.data = tmp.slice(0,-2) + this.data;
-        }
+            else if (keysTable.length == 1) {
+                this.data = `${who[keysTable[0]]} is typing...`;
+            }
+            else {
+                this.data = " are typing...";
+                let tmp = "";
+                for(let key in keysTable) {
+                    tmp = `${who[key]}, ${tmp}`;
+                }
+                this.data = tmp.slice(0,-2) + this.data;
+            }
         }
     };
     $('#messages').append($('<li>').text(areTyping.data));
+    socket.emit('get-actives');
 
     //username submiter
     $('#usr').submit( () => {
@@ -35,6 +45,10 @@ $(function() {
             socket.emit('user-creation', $('#username').val());
         }
         return false;
+    });
+
+    socket.on('actives', (activesTable) => {
+        updateActives(activesTable);
     });
 
     socket.on('login-status', (bool) => {
@@ -59,7 +73,7 @@ $(function() {
                 return false;
             }
             $('#messages')[0].childNodes[areTyping.index].remove();
-            $('#messages').append($('<li style="text-align: right;">').text(msg));
+            $('#messages').append($('<li class="own">').text(msg));
             $('#messages').append($('<li>').text(areTyping.data));
             areTyping.index += 1;
             scrolldown();
