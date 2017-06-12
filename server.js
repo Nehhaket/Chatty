@@ -105,9 +105,8 @@ io.on('connection', (socket) => {
         if (key == socket.id) {
             socket.emit('server-message',
                         "Need a friend to talk to?");
-
         }
-        if(key == undefined) {
+        else if (key == undefined) {
             socket.emit('server-message',
                         `${username} not found.`);
         }
