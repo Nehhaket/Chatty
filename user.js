@@ -74,14 +74,7 @@ $(function() {
                 socket.emit('client-message', msg);
                 return false;
             }
-            if (msg[0] != "@") {
-                $('#m').val('');
-                socket.emit('typing', false);
-                socket.emit('client-message', msg);
-                smsg = msg;
-
-            }
-            else {
+            if (msg[0] == "@" && msg.match(/@(\w)+/)) {
                 $('#m').val('');
                 let to = msg.match(/@(\w)+/)[0];
                 to = to.slice(1, to.length);
@@ -90,6 +83,12 @@ $(function() {
                 socket.emit('typing', false);
                 socket.emit('private-message', to, pmsg);
                 smsg = `To ${to}: ${pmsg}`;
+            }
+            else {
+                $('#m').val('');
+                socket.emit('typing', false);
+                socket.emit('client-message', msg);
+                smsg = msg;
             }
             $('#messages')[0].childNodes[areTyping.index].remove();
             $('#messages').append($('<li class="own">').text(smsg));
