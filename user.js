@@ -83,8 +83,10 @@ $(function() {
             }
             else {
                 $('#m').val('');
-                let to = msg.match(/{(.)*}/)[0].slice(1, -1);
-                let pmsg = msg.match(/}(.)*/)[0].slice(1, msg.length);
+                let to = msg.match(/@(\w)+/)[0];
+                to = to.slice(1, to.length);
+                let pmsg = msg.slice(to.length+2, msg.length);
+                console.log(pmsg);
                 socket.emit('typing', false);
                 socket.emit('private-message', to, pmsg);
                 smsg = `To ${to}: ${pmsg}`;

@@ -35,7 +35,8 @@ app.get('/style.css', (req, res) => {
 //chat event handlers
 io.on('connection', (socket) => {
     socket.emit('server-message',
-                "To send private message: '@{username} message'");
+                'username has to be alphanumeric ("_" allowed)' +
+                '\nTo send private message: "@username message"');
     const heartBeat = () => {
         io.emit('elo');
     };
@@ -50,6 +51,10 @@ io.on('connection', (socket) => {
 
     //user creation handler
     socket.on('user-creation', (username) => {
+        if (username.match(/^(\w)+$/) == null) {
+            socket.emit('login-status', false);
+            return;
+        }
         let _return = 0;
         for (let k in activeClientsTable) {
             if (activeClientsTable[k] === username) {
