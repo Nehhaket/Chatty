@@ -50,6 +50,15 @@ io.on('connection', (socket) => {
 
     //user creation handler
     socket.on('user-creation', (username) => {
+        let _return = 0;
+        for (let k in activeClientsTable) {
+            if (activeClientsTable[k] === username) {
+                _return = 1;
+                socket.emit('login-status', false);
+                break;
+            }
+        }
+        if (_return) return;
         let message;
         const tmp = activeClientsTable[socket.id];
         if (username == "") {
@@ -98,7 +107,7 @@ io.on('connection', (socket) => {
                         "Need a friend to talk to?");
 
         }
-        if (key != undefined) {
+        else if (key != undefined) {
             io.to(key).emit('server-message',
                 `From ${activeClientsTable[socket.id]}: ${message}`);
         }
