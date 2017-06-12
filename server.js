@@ -35,8 +35,9 @@ app.get('/style.css', (req, res) => {
 //chat event handlers
 io.on('connection', (socket) => {
     socket.emit('server-message',
-                'username has to be alphanumeric ("_" allowed)' +
-                '\nTo send private message: "@username message"');
+                'Username has to be alphanumeric ("_" allowed)');
+    socket.emit('server-message',
+                'To send private message: "@username message"');
     const heartBeat = () => {
         io.emit('elo');
     };
