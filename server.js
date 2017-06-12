@@ -93,6 +93,11 @@ io.on('connection', (socket) => {
                 break;
             }
         }
+        if (key == socket.id) {
+            socket.emit('server-message',
+                        "Need a friend to talk to?");
+
+        }
         if (key != undefined) {
             io.to(key).emit('server-message',
                 `From ${activeClientsTable[socket.id]}: ${message}`);
