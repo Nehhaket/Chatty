@@ -34,6 +34,8 @@ app.get('/style.css', (req, res) => {
 
 //chat event handlers
 io.on('connection', (socket) => {
+    socket.emit('server-message',
+                "To send private message: '@{username} message'");
     const heartBeat = () => {
         io.emit('elo');
     };
@@ -80,6 +82,20 @@ io.on('connection', (socket) => {
         else {
             socket.emit('server-message',
                         "You need a username to use the chat!");
+        }
+    });
+
+    socket.on('private-message', (username, message) => {
+        let key;
+        for (let k in activeClientsTable) {
+            if (activeClientsTable[k] === username) {
+                key = k;
+                break;
+            }
+        }
+        if (key != undefined) {
+            io.to(key).emit('server-message',
+                `From ${activeClientsTable[socket.id]}: ${message}`);
         }
     });
 

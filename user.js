@@ -11,7 +11,8 @@ $(function() {
             $('#clients-table')[0].childNodes[0].remove();
         }
         for (let user of activesTable) {
-            $('#clients-table').append($('<li>').text(user));
+            $('#clients-table').append($(`<li>`)
+                                        .text(user));
         }
     };
     const areTyping = {
@@ -66,14 +67,30 @@ $(function() {
     $('#msg').submit( () => {
         const msg = $('#m').val();
         if (msg != "") {
-            $('#m').val('');
-            socket.emit('typing', false);
-            socket.emit('client-message', msg);
+            let smsg;
             if (username == undefined) {
+                $('#m').val('');
+                socket.emit('typing', false);
+                socket.emit('client-message', msg);
                 return false;
             }
+            if (msg[0] != "@") {
+                $('#m').val('');
+                socket.emit('typing', false);
+                socket.emit('client-message', msg);
+                smsg = msg;
+
+            }
+            else {
+                $('#m').val('');
+                let to = msg.match(/{(.)*}/)[0].slice(1, -1);
+                let pmsg = msg.match(/}(.)*/)[0].slice(1, msg.length);
+                socket.emit('typing', false);
+                socket.emit('private-message', to, pmsg);
+                smsg = `To ${to}: ${pmsg}`;
+            }
             $('#messages')[0].childNodes[areTyping.index].remove();
-            $('#messages').append($('<li class="own">').text(msg));
+            $('#messages').append($('<li class="own">').text(smsg));
             $('#messages').append($('<li>').text(areTyping.data));
             areTyping.index += 1;
             scrolldown();
