@@ -11,7 +11,7 @@ It still lacks some functionalities that I planned for it to have.
 &nbsp;
 
 ---
-This projest was made for educational purposes and is based on a guide by Socket.io @ https://socket.io/get-started/chat/
+This project was made for educational purposes and is based on a guide by Socket.io @ https://socket.io/get-started/chat/
 
 &nbsp;
 
